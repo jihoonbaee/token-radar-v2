@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar v2 — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="dot"></span>TOKEN RADAR <b>v2</b></div>
+  <p class="sub">Pre-token protocols ranked by implied value — fitted, not hand-weighted.</p>
+  <div id="stats" class="stats"></div>
+</header>
+<main>
+  <section id="model" class="panel"></section>
+  <section id="sandbox" class="panel">
+    <h2>Model sandbox — re-rank live</h2>
+    <p class="hint">Move a slider and the board recomputes from the fitted coefficients. Nothing here is a fixed list: every value is arithmetic on the snapshot.</p>
+    <div class="sliders">
+      <label>Growth weight (dropped — no effect) <input type="range" id="sbGrowth" min="0" max="2" step="0.05" value="1" disabled><span id="sbGrowthV">1.00×</span></label>
+      <label>Age weight <input type="range" id="sbAge" min="0" max="2" step="0.05" value="1"><span id="sbAgeV">1.00×</span></label>
+      <label>Multiple scale <input type="range" id="sbMult" min="0.5" max="2" step="0.05" value="1"><span id="sbMultV">1.00×</span></label>
+      <button id="sbReset" type="button">Reset</button>
+    </div>
+  </section>
+  <section class="controls">
+    <input id="q" type="search" placeholder="Search name or slug…" autocomplete="off">
+    <select id="fCat"><option value="">All categories</option></select>
+    <select id="fChain"><option value="">All chains</option></select>
+    <div class="tabs" role="tablist">
+      <button type="button" data-tab="board" class="on">Board</button>
+      <button type="button" data-tab="watchlist">Watchlist</button>
+      <button type="button" data-tab="live">Live token</button>
+    </div>
+  </section>
+  <p id="count" class="count"></p>
+  <div class="tablewrap"><table id="board">
+    <thead><tr>
+      <th data-k="rank">#</th><th data-k="name">Protocol</th><th data-k="category">Category</th>
+      <th data-k="chains">Chains</th><th data-k="tvl">TVL</th><th data-k="change_7d">7d</th>
+      <th data-k="age_days">Age</th><th data-k="implied">Implied value</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="foot">Implied value is this entry's own claim, fitted from the snapshot's live protocols. A protocol is shown as having no token recorded when its DefiLlama record carries none — never as having none. Farm steps give a dollar cost and a duration for every step.</p>
+</main>
+<aside id="drawer" class="drawer" hidden></aside>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
