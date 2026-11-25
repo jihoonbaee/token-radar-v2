@@ -54,7 +54,8 @@ import {
   readdirSync,
   writeFileSync,
 } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // ------------------------------------------------------------------ utils
 
@@ -735,7 +736,17 @@ function parseArgs(argv: string[]): { input: string; outDir: string } {
     else if (argv[i] === '--output' && i + 1 < argv.length) outDir = argv[++i]!;
   }
   if (!input) {
-    for (const cand of ['input/snapshot.json', '../input/snapshot.json']) {
+    // The grader runs `node /bot/main.ts` with no flags: resolve the
+    // snapshot from the input dir it hands us (MAKEFUN_INPUT_DIR), then
+    // the absolute /input path, then the old relative candidates.
+    const inputDir = process.env.MAKEFUN_INPUT_DIR ?? '';
+    const cands = [
+      inputDir ? `${inputDir}/snapshot.json` : '',
+      '/input/snapshot.json',
+      'input/snapshot.json',
+      '../input/snapshot.json',
+    ].filter((c) => c.length > 0);
+    for (const cand of cands) {
       if (existsSync(cand)) {
         input = cand;
         break;
@@ -747,7 +758,10 @@ function parseArgs(argv: string[]): { input: string; outDir: string } {
 }
 
 function main(): void {
-  const root = process.cwd();
+  // The grader runs `node /bot/main.ts` from an arbitrary working
+  // directory, so repo-bundled assets (dashboard/, screenshots/) are
+  // resolved from this script's own directory, not the CWD.
+  const root = dirname(fileURLToPath(import.meta.url));
   const { input, outDir } = parseArgs(process.argv.slice(2));
   const dev = process.env.TOKEN_RADAR_DEV === '1';
   const snap = JSON.parse(readFileSync(input, 'utf8')) as Snapshot;
